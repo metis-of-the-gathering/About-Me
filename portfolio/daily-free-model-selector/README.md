@@ -22,6 +22,22 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 
 # Run the script
 python select-free-models.py
+
+# Override with a specific model
+export PREFERRED_FREE_MODEL=poolside/laguna-m.1:free
+python select-free-models.py
+```
+
+### Operator Override
+
+Use the `PREFERRED_FREE_MODEL` environment variable to force a specific model instead of auto-selection:
+
+```bash
+# Force laguna-m.1 for testing
+export PREFERRED_FREE_MODEL=poolside/laguna-m.1:free
+
+# Force a different model
+export PREFERRED_FREE_MODEL=openai/gpt-oss-120b:free
 ```
 
 ## Output Example
