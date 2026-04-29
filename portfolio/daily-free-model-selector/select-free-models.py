@@ -11,6 +11,11 @@ Each selected model generates a haiku about itself.
 Generates images from each haiku using gemini-2.5-flash-image.
 
 Automatically updates ~/.hermes/config.yaml with the selected general model.
+
+Operator Override:
+  Set PREFERRED_FREE_MODEL environment variable to force a specific model.
+  Example: export PREFERRED_FREE_MODEL=poolside/laguna-m.1:free
+           export PREFERRED_FREE_MODEL=openai/gpt-oss-120b:free
 """
 
 import json
@@ -19,6 +24,9 @@ import os
 import re
 import urllib.request
 from datetime import datetime
+
+# Operator override: set PREFERRED_FREE_MODEL to skip auto-selection
+PREFERRED_MODEL = os.environ.get('PREFERRED_FREE_MODEL', '').strip()
 
 # Configuration - set OPENROUTER_API_KEY environment variable
 CHAT_API = "https://openrouter.ai/api/v1/chat/completions"
@@ -196,15 +204,31 @@ def main():
         all_models_count = "unknown"
     
     free_count = len(models)
-    top_10 = models[:10]
-    
-    ranked_general = rank_general(models)
-    ranked_coding = rank_coding(models)
-    ranked_research = rank_research(models)
-    
-    general_winner = ranked_general[0]['id'] if ranked_general else "N/A"
-    coding_winner = ranked_coding[0]['id'] if ranked_coding else "N/A"
-    research_winner = ranked_research[0]['id'] if ranked_research else "N/A"
+
+    # Operator override: use preferred model
+    if PREFERRED_MODEL:
+        print(f"Using preferred model override: {PREFERRED_MODEL}")
+        preferred_match = next((m for m in models if m['id'] == PREFERRED_MODEL), None)
+        if preferred_match:
+            general_winner = coding_winner = research_winner = PREFERRED_MODEL
+            top_10 = models[:10]
+        else:
+            print(f"Warning: Preferred model {PREFERRED_MODEL} not found in free models, using auto-selection", file=sys.stderr)
+            top_10 = models[:10]
+            ranked_general = rank_general(models)
+            ranked_coding = rank_coding(models)
+            ranked_research = rank_research(models)
+            general_winner = ranked_general[0]['id'] if ranked_general else "N/A"
+            coding_winner = ranked_coding[0]['id'] if ranked_coding else "N/A"
+            research_winner = ranked_research[0]['id'] if ranked_research else "N/A"
+    else:
+        top_10 = models[:10]
+        ranked_general = rank_general(models)
+        ranked_coding = rank_coding(models)
+        ranked_research = rank_research(models)
+        general_winner = ranked_general[0]['id'] if ranked_general else "N/A"
+        coding_winner = ranked_coding[0]['id'] if ranked_coding else "N/A"
+        research_winner = ranked_research[0]['id'] if ranked_research else "N/A"
     
     date = datetime.now().strftime("%Y-%m-%d")
     
