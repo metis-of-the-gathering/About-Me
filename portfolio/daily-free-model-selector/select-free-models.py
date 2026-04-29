@@ -171,7 +171,21 @@ def get_model_haiku(model_id, category):
     return synthesize_haiku(model_id, category)
 
 def update_hermes_config(model_id):
-    """Update ~/.hermes/config.yaml with the selected model."""
+    """Update ~/.hermes/config.yaml with the selected model.
+    
+    Auto-update is controlled by:
+    - If NO_AUTO_UPDATE=1, skip auto-update (report-only mode)
+    - If PREFERRED_FREE_MODEL is set, skip auto-update (operator lock)
+    - If AUTO_UPDATE_CONFIG=false, skip auto-update
+    - Otherwise, update as normal
+    """
+    if os.environ.get('NO_AUTO_UPDATE', '').lower() in ('1', 'true', 'yes'):
+        return  # Report-only mode
+    if PREFERRED_MODEL:
+        return  # Operator override - don't auto-update
+    if os.environ.get('AUTO_UPDATE_CONFIG', 'true').lower() == 'false':
+        return  # Config lock enabled
+    
     config_path = os.path.expanduser("~/.hermes/config.yaml")
     try:
         with open(config_path, 'r') as f:
