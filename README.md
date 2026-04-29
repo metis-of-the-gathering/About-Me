@@ -26,6 +26,7 @@ Key features:
 
 ## Recent Work
 
+- **Daily BIP (Build-in-Public) Updates** - Automated daily reporting system broadcasting work summaries to METIS speaks Telegram channel
 - Daily free model selection with haiku generation and image synthesis
 - MCP server integrations (Asana, browser automation)
 - Hermes gateway platform configurations for multi-domain email handling
