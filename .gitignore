@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Sensitive environment files
+.env
+.hermes/.env
+
+# Config files with potential secrets
+config.local.yaml
+config.secrets.yaml
