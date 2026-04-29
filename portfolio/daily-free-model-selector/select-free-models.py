@@ -9,11 +9,14 @@ Fetches free models from OpenRouter and ranks them for:
 
 Each selected model generates a haiku about itself.
 Generates images from each haiku using gemini-2.5-flash-image.
+
+Automatically updates ~/.hermes/config.yaml with the selected general model.
 """
 
 import json
 import sys
 import os
+import re
 import urllib.request
 from datetime import datetime
 
@@ -41,7 +44,7 @@ def generate_image(prompt, api_key):
         )
         with urllib.request.urlopen(req, timeout=60) as response:
             result = json.loads(response.read().decode())
-            cost = 0.000003  # Approx cost per image
+            cost = 0.000003
             total_cost += cost
             msg = result.get('choices', [{}])[0].get('message', {})
             if msg.get('images'):
@@ -119,7 +122,6 @@ def get_why_chose(model_id, category, top_10):
     return f"{reasons.get(category, 'Good all-rounder')}{ctx_info}{extra}"
 
 def synthesize_haiku(model_id, category):
-    """Fallback haikus - used when API unavailable or model can't generate."""
     name = model_id.lower()
     if 'gemma' in name:
         return "Gemma, fresh and bright,\nSpring reasoning in circuits hum--\nKnowledge takes its flight."
@@ -133,7 +135,6 @@ def synthesize_haiku(model_id, category):
         return "The chosen model,\nDaily serving human thought--\nAI's artful dance."
 
 def get_model_haiku(model_id, category):
-    """Get haiku from model via API, or synthesize as fallback."""
     api_key = os.environ.get('OPENROUTER_API_KEY', '')
     if not api_key:
         return synthesize_haiku(model_id, category)
@@ -161,6 +162,24 @@ def get_model_haiku(model_id, category):
         pass
     return synthesize_haiku(model_id, category)
 
+def update_hermes_config(model_id):
+    """Update ~/.hermes/config.yaml with the selected model."""
+    config_path = os.path.expanduser("~/.hermes/config.yaml")
+    try:
+        with open(config_path, 'r') as f:
+            content = f.read()
+        updated = re.sub(
+            r'^  default: .+$',
+            f'  default: {model_id}',
+            content,
+            flags=re.MULTILINE
+        )
+        with open(config_path, 'w') as f:
+            f.write(updated)
+        print(f"  Updated ~/.hermes/config.yaml to use {model_id}")
+    except Exception as e:
+        print(f"  Failed to update config: {e}", file=sys.stderr)
+
 def main():
     global total_cost
     models = fetch_free_models()
@@ -170,7 +189,6 @@ def main():
     
     api_key = os.environ.get('OPENROUTER_API_KEY', '')
     
-    # Get total model count
     try:
         with urllib.request.urlopen("https://openrouter.ai/api/v1/models", timeout=15) as resp:
             all_models_count = len(json.loads(resp.read().decode()).get('data', []))
@@ -189,6 +207,9 @@ def main():
     research_winner = ranked_research[0]['id'] if ranked_research else "N/A"
     
     date = datetime.now().strftime("%Y-%m-%d")
+    
+    # Update Hermes config with the general winner
+    update_hermes_config(general_winner)
     
     print("=" * 50)
     print(f"DAILY FREE MODEL SELECTION - {date}")

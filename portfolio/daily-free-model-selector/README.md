@@ -11,6 +11,7 @@ An automated script that ranks free LLMs from OpenRouter across three categories
   - **Research**: Deep reasoning, long context, accuracy
 - Generates haikus for each selected model (via API or synthesized)
 - Creates images from haikus using Gemini 2.5 Flash Image ($0.000003 per image)
+- **Auto-updates** `~/.hermes/config.yaml` with the selected general model
 - Reports model statistics and generation costs
 
 ## Usage
@@ -35,7 +36,7 @@ Free models available: 29
 
 GENERAL TASKS:
   google/gemma-4-26b-a4b-it:free
-  Why: Balances reasoning ability with context length for everyday tasks 262K context
+  Why: Balances reasoning ability with context length for everyday tasks 262K context (Google's latest architecture)
   Haiku:
     Gemma, fresh and bright,
     Spring reasoning in circuits hum--
