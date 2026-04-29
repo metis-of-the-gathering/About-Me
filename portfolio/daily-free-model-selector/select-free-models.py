@@ -71,7 +71,7 @@ def rank_general(models):
         ctx = m.get('context_length', 0) / 1000
         name = m.get('id', '').lower()
         bonus = 0
-        if 'laguna' in name: bonus += 3
+        if 'laguna' in name: bonus += 131  # Compensate for lower context, proven ChatML performance
         if 'nemotron' in name and 'reasoning' in name: bonus += 2
         if 'gemma-4' in name or 'minimax' in name: bonus += 2
         if 'gemini' in name or 'claude' in name: bonus += 2
@@ -85,7 +85,7 @@ def rank_coding(models):
         if 'qwen' in name or 'coder' in name: return ctx + 5
         if 'codex' in name or 'code' in name: return ctx + 4
         if 'claude' in name or 'sonnet' in name: return ctx + 4
-        if 'laguna' in name: return ctx + 3
+        if 'laguna' in name: return ctx + 3  # Proven ChatML performance
         return ctx
     return sorted(models, key=score, reverse=True)
 
