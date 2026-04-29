@@ -40,6 +40,15 @@ export PREFERRED_FREE_MODEL=poolside/laguna-m.1:free
 export PREFERRED_FREE_MODEL=openai/gpt-oss-120b:free
 ```
 
+### Report-Only Mode
+
+Use `NO_AUTO_UPDATE=1` to generate reports without modifying the config file:
+
+```bash
+# Generate report without changing config
+NO_AUTO_UPDATE=1 python select-free-models.py
+```
+
 ## Output Example
 
 ```
