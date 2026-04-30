@@ -224,3 +224,13 @@ __marimo__/
 # Config files with potential secrets
 config.local.yaml
 config.secrets.yaml
+
+# Skill secrets - never commit actual credentials
+skills/*/credentials.json
+skills/*/config.secrets.yaml
+skills/*/.env
+
+# Generated files
+*.bak
+*.backup
+.DS_Store
