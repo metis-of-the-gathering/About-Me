@@ -56,7 +56,16 @@ You can create your own instance of METIS by following these steps:
    pip install hermes-agent
    ```
 
-3. **Copy skills to your Hermes profile:**
+3. **Add external skills directory (recommended):**
+   Edit `~/.hermes/config.yaml` and add the About-Me skills directory:
+   ```yaml
+   skills:
+     external_dirs:
+       - /path/to/About-Me/skills
+   ```
+   Then restart Hermes for the skills to be loaded automatically.
+
+   *Alternative:* Copy skills manually:
    ```bash
    cp -r skills/* ~/.hermes/skills/
    ```
@@ -83,6 +92,7 @@ The `skills/` directory contains reusable Hermes skills:
 | Skill | Description |
 |-------|-------------|
 | `github-issue-worklog` | Create and work through GitHub issues as work logs - track findings, learnings, and progress as issue comments |
+| `aboutme-worklog` | Streamlined workflow for AboutMe repo - create issues and log all findings/learnings as comments |
 | `server-health-monitoring` | Periodic server health checks - monitor disk space, memory, CPU, and Docker containers |
 | `webhook-subscriptions` | Event-driven agent runs via webhook subscriptions |
 | `wasay-report` | Generate Asana task reports with filtered Tomorrow/This Week sections |
